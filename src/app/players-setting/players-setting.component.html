@@ -15,6 +15,6 @@
       (click)="onAdded()"
     >Добавить</button>
 
-    <button class="btn btn-primary" (click)="onStartGame()">Начать игру!</button>
+    <button class="btn btn-primary" (click)="onStartGame()" [disabled]="players.length < 3">Начать игру!</button>
   </li>
 </ul>
