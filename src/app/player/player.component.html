@@ -1,0 +1,16 @@
+<div class="player-item">
+  <div class="player"
+       [ngClass]="{'current': player.isCurrent, 'selected': player.isSelected}"
+       (click)="onPlayerClick()">
+
+    <div *ngIf="isNeedShowSelectionCount()"
+         class="selection-count"
+         (click)="onDeselect($event)">
+      {{player.selectionCount}}
+    </div>
+
+    <span class="player-name">{{player.name}}</span>
+  </div>
+
+  <span class="score">{{player.score}}</span>
+</div>

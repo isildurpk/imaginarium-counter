@@ -1,0 +1,20 @@
+<h2>Список игроков</h2>
+<hr>
+<ul class="list-group">
+  <li
+    *ngFor="let p of players"
+    style="list-style: none;"
+    class="list-group-item"
+  >
+    <app-player-setting [player]="p"></app-player-setting>
+  </li>
+  <li style="list-style: none;" class="list-group-item flex-container">
+    <button
+      class="btn btn-success"
+      type="button"
+      (click)="onAdded()"
+    >Добавить</button>
+
+    <button class="btn btn-primary" (click)="onStartGame()">Начать игру!</button>
+  </li>
+</ul>

@@ -1,0 +1,13 @@
+<h2>Кто угадал?</h2>
+
+<div class="row">
+  <div class="col-xs-12" style="text-align: right;">
+    <button class="btn btn-primary" (click)="onNext()">Далее</button>
+  </div>
+</div>
+
+<hr>
+
+<div class="players-container">
+  <app-player *ngFor="let p of players" [player]="p"></app-player>
+</div>
