@@ -24,4 +24,8 @@ export class WhoHaveBeenChosenComponent implements OnInit {
   canGoNext(): boolean {
     return this.game.canGoNext();
   }
+
+  restart() {
+    this.game.restart();
+  }
 }

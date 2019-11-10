@@ -2,6 +2,7 @@
 
 <div class="row">
   <div class="col-xs-12" style="text-align: right;">
+    <a (click)="restart()" style="margin-right: 10px; cursor: pointer;">Новая игра</a>
     <button class="btn btn-primary"
             [disabled]="!canGoNext()"
             (click)="onNext()">

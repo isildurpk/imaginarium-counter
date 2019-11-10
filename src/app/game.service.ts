@@ -17,10 +17,10 @@ export class GameService {
   private availableClicks: number;
 
   players: Player[] = [
-    new Player("Егор"),
-    new Player("Динара"),
-    new Player("Константин"),
-    new Player("Евгений")
+    new Player("Игрок 1"),
+    new Player("Игрок 2"),
+    new Player("Игрок 3"),
+    new Player("Игрок 4")
   ];
   whoIsRightPlayers: Player[];
   currentPlayerIndex: number = 0;
@@ -142,6 +142,11 @@ export class GameService {
       this.updateAvailableClicks();
 
     this.stateChanged.emit(this.state);
+  }
+
+  restart(): void {
+    localStorage.clear();
+    window.location.href = "/";
   }
 
   private updateScores(): boolean {

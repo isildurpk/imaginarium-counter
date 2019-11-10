@@ -21,4 +21,8 @@ export class WhoIsRightComponent implements OnInit {
   onNext() {
     this.game.next();
   }
+
+  restart() {
+    this.game.restart();
+  }
 }
