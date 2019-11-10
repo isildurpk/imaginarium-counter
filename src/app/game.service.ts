@@ -93,11 +93,11 @@ export class GameService {
       let initialAvailableClicks = this.players.length - 1 - this.whoIsRightPlayers.length;
       if (this.availableClicks > 0 && !this.whoIsRightPlayers.includes(player) &&
         player.selectionCount == initialAvailableClicks - 1) {
-        console.log('clicks for player minus one')
+        console.log('clicks for player minus one');
         clicksForPlayer--;
       }
 
-      console.log('clicks for ' + player.name + ': ' + clicksForPlayer)
+      console.log('clicks for ' + player.name + ': ' + clicksForPlayer);
       if (clicksForPlayer > 0)
         player.select();
       this.updateAvailableClicks();
@@ -138,13 +138,16 @@ export class GameService {
       p.selectionCount = 0;
       p.isSelected = false;
     });
-    if (this.state == State.WhoHaveBeenChosen)
+    if (this.state === State.WhoHaveBeenChosen)
       this.updateAvailableClicks();
 
     this.stateChanged.emit(this.state);
   }
 
   restart(): void {
+    if (!confirm("Начинаем заново?")) {
+      return;
+    }
     localStorage.clear();
     window.location.href = "/";
   }
