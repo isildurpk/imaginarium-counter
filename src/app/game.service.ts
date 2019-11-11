@@ -16,7 +16,7 @@ export class GameService {
   private state: State = State.SetPlayers;
   private availableClicks: number;
 
-  players: Player[] = [
+  readonly players: Player[] = [
     new Player("Игрок 1"),
     new Player("Игрок 2"),
     new Player("Игрок 3"),
