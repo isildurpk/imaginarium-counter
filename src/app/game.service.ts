@@ -1,6 +1,6 @@
-import {EventEmitter} from '@angular/core';
 import {Player} from './models/player.model';
 import {StateDto} from './models/state-dto.model';
+import {Subject} from 'rxjs';
 
 export enum State {
   SetPlayers = 0,
@@ -24,7 +24,7 @@ export class GameService {
   ];
   whoIsRightPlayers: Player[];
   currentPlayerIndex: number = 0;
-  stateChanged = new EventEmitter<State>();
+  readonly stateChanged = new Subject<State>();
 
   constructor() {
     console.log('GameService CONSTRUCTOR');
@@ -34,7 +34,7 @@ export class GameService {
       this.state = stateDto.state;
       this.currentPlayerIndex = stateDto.currentPlayerIndex;
       this.whoIsRightPlayers = stateDto.whoIsRightPlayers.map(name => this.players.find(p => p.name === name));
-      this.stateChanged.emit(this.state);
+      this.stateChanged.next(this.state);
       this.updateAvailableClicks();
     }
 
@@ -72,7 +72,7 @@ export class GameService {
   start(): void {
     this.state = State.WhoIsRight;
     this.players[this.currentPlayerIndex].isCurrent = true;
-    this.stateChanged.emit(this.state);
+    this.stateChanged.next(this.state);
     this.whoIsRightPlayers = this.players.filter(p => p.isSelected);
     this.updateAvailableClicks();
   }
@@ -141,7 +141,7 @@ export class GameService {
     if (this.state === State.WhoHaveBeenChosen)
       this.updateAvailableClicks();
 
-    this.stateChanged.emit(this.state);
+    this.stateChanged.next(this.state);
   }
 
   restart(): void {
