@@ -9,6 +9,7 @@ import {GameService, State} from './game.service';
 })
 export class AppComponent implements OnInit {
   gameState: State;
+  State = State; // для использования в шаблоне html
 
   constructor(private game: GameService) {
   }
