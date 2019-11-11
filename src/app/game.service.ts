@@ -152,6 +152,7 @@ export class GameService {
     window.location.href = "/";
   }
 
+  // returns true if everybody guessed
   private updateScores(): boolean {
     const currentPlayer = this.getCurrentPlayer();
     if (this.whoIsRightPlayers.length === 0) {
