@@ -24,16 +24,18 @@ export class GameService {
   ];
   whoIsRightPlayers: Player[];
   currentPlayerIndex = 0;
+  currentRound = 0;
   readonly stateChanged = new Subject<State>();
 
   constructor() {
     console.log('GameService CONSTRUCTOR');
-    const stateDto: StateDto = JSON.parse(localStorage.getItem('state'));
+    let stateDto: StateDto = JSON.parse(localStorage.getItem('state'));
     if (stateDto) {
       this.players = stateDto.players.map(p => Player.create(p));
       this.state = stateDto.state;
       this.currentPlayerIndex = stateDto.currentPlayerIndex;
       this.whoIsRightPlayers = stateDto.whoIsRightPlayers.map(name => this.players.find(p => p.name === name));
+      this.currentRound = stateDto.currentRound;
       this.stateChanged.next(this.state);
       this.updateAvailableClicks();
     }
@@ -45,7 +47,7 @@ export class GameService {
         ? this.whoIsRightPlayers.map((player: Player) => player.name)
         : [];
 
-      const stateDto = new StateDto(this.state, this.players, this.currentPlayerIndex, whoIsRightToSave);
+      stateDto = new StateDto(this.state, this.players, this.currentPlayerIndex, whoIsRightToSave, this.currentRound);
       localStorage.setItem('state', JSON.stringify(stateDto));
     });
   }
@@ -72,6 +74,7 @@ export class GameService {
   }
 
   start(): void {
+    this.currentRound = 1;
     this.state = State.WhoIsRight;
     this.players[this.currentPlayerIndex].isCurrent = true;
     this.stateChanged.next(this.state);
@@ -129,6 +132,7 @@ export class GameService {
         this.incrementCurrentPlayer();
         this.whoIsRightPlayers = [];
         this.state = State.WhoIsRight;
+        this.currentRound++;
       }
       console.log('Кто угадал: ', this.whoIsRightPlayers.map(p => p.name).join(', '));
     } else if (this.state === State.WhoHaveBeenChosen) {
@@ -136,12 +140,14 @@ export class GameService {
       this.incrementCurrentPlayer();
       this.whoIsRightPlayers = [];
       this.state = State.WhoIsRight;
+      this.currentRound++;
     }
 
     this.players.forEach(p => {
       p.selectionCount = 0;
       p.isSelected = false;
     });
+
     if (this.state === State.WhoHaveBeenChosen) {
       this.updateAvailableClicks();
     }

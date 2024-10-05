@@ -19,6 +19,6 @@ export class AppComponent implements OnInit {
 
     this.game.stateChanged.subscribe(
       state => this.gameState = state
-    )
+    );
   }
 }

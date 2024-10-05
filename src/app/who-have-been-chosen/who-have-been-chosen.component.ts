@@ -10,6 +10,10 @@ import {GameService} from '../game.service';
 export class WhoHaveBeenChosenComponent implements OnInit {
   players: Player[];
 
+  get currentRound(): number {
+    return this.game && this.game.currentRound || 0;
+  }
+
   constructor(private game: GameService) {
   }
 

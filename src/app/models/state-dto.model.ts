@@ -5,6 +5,7 @@ export class StateDto {
   constructor(public state: State,
               public players: Player[],
               public currentPlayerIndex: number,
-              public whoIsRightPlayers: string[]) {
+              public whoIsRightPlayers: string[],
+              public currentRound: number) {
   }
 }
