@@ -1,6 +1,6 @@
-import {Component, Input, OnInit} from '@angular/core';
-import {Player} from '../models/player.model';
-import {GameService, State} from '../game.service';
+import { Component, Input, OnInit } from '@angular/core';
+import { Player } from '../models/player.model';
+import { GameService, State } from '../game.service';
 
 @Component({
   selector: 'app-player',
@@ -25,6 +25,6 @@ export class PlayerComponent implements OnInit {
   }
 
   isNeedShowSelectionCount(): boolean {
-    return this.game.getState() === State.WhoHaveBeenChosen && this.player.isSelected;
+    return this.game.getState === State.WhoHaveBeenChosen && this.player.isSelected;
   }
 }

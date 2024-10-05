@@ -1,6 +1,5 @@
-import {Player} from './models/player.model';
-import {GameRoundState} from './models/game-round-state.model';
-import {Subject} from 'rxjs';
+import { Player } from './models/player.model';
+import { GameRoundState } from './models/game-round-state.model';
 import { GameState } from './models/game-state.model';
 
 export enum State {
@@ -15,6 +14,10 @@ export class GameService {
   NOBODY_GUESSED = -2;
 
   private state: State = State.SetPlayers;
+  get getState(): State {
+    return this.state;
+  }
+
   private availableClicks: number;
 
   players: Player[] = [
@@ -27,18 +30,12 @@ export class GameService {
   whoIsRightPlayers: Player[];
   currentPlayerIndex = 0;
   currentRound = 0;
-  readonly stateChanged = new Subject<State>();
 
   private gameState: GameState;
 
   constructor() {
     console.log('GameService CONSTRUCTOR');
     this.restoreGameState();
-
-    this.stateChanged.subscribe(() => {
-      console.log('StateChanged in GameService');
-      this.storeGameState();
-    });
   }
 
   private restoreGameState() {
@@ -60,7 +57,7 @@ export class GameService {
       this.currentPlayerIndex = gameRoundState.currentPlayerIndex;
       this.whoIsRightPlayers = gameRoundState.whoIsRightPlayers.map(name => this.players.find(p => p.name === name));
       this.currentRound = gameRoundState.currentRound;
-      this.stateChanged.next(this.state);
+      this.storeGameState();
       this.updateAvailableClicks();
   }
 
@@ -72,10 +69,6 @@ export class GameService {
       const gameRoundState = new GameRoundState(this.state, this.players, this.currentPlayerIndex, whoIsRightToSave, this.currentRound);
       this.gameState.addRound(gameRoundState);
       this.gameState.store();
-  }
-
-  getState(): State {
-    return this.state;
   }
 
   addPlayer(player: Player): void {
@@ -99,7 +92,7 @@ export class GameService {
     this.currentRound = 1;
     this.state = State.WhoIsRight;
     this.players[this.currentPlayerIndex].isCurrent = true;
-    this.stateChanged.next(this.state);
+    this.storeGameState();
     this.whoIsRightPlayers = this.players.filter(p => p.isSelected);
     this.updateAvailableClicks();
   }
@@ -174,7 +167,7 @@ export class GameService {
       this.updateAvailableClicks();
     }
 
-    this.stateChanged.next(this.state);
+    this.storeGameState();
   }
 
   restart(): void {

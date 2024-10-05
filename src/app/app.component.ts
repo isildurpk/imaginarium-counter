@@ -1,24 +1,19 @@
-import {Component, OnInit} from '@angular/core';
+import { Component } from '@angular/core';
 
-import {GameService, State} from './game.service';
+import { GameService, State } from './game.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit {
-  gameState: State;
+export class AppComponent {
   State = State; // для использования в шаблоне html
 
-  constructor(private game: GameService) {
+  get gameState(): State {
+    return this.game.getState;
   }
 
-  ngOnInit(): void {
-    this.gameState = this.game.getState();
-
-    this.game.stateChanged.subscribe(
-      state => this.gameState = state
-    );
+  constructor(private game: GameService) {
   }
 }
