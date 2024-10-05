@@ -1,9 +1,9 @@
 <div class="container">
   <div class="row">
     <div class="col-xs-12">
-      <app-players-setting *ngIf="gameState === State.SetPlayers"></app-players-setting>
-      <app-whoisright-component *ngIf="gameState === State.WhoIsRight"></app-whoisright-component>
-      <app-who-have-been-chosen *ngIf="gameState === State.WhoHaveBeenChosen"></app-who-have-been-chosen>
+      <app-players-setting *ngIf="stage === Stage.SetPlayers"></app-players-setting>
+      <app-whoisright-component *ngIf="stage === Stage.WhoIsRight"></app-whoisright-component>
+      <app-who-have-been-chosen *ngIf="stage === Stage.WhoHaveBeenChosen"></app-who-have-been-chosen>
     </div>
   </div>
 </div>

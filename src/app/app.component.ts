@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import { GameService, State } from './game.service';
+import { GameService, Stage } from './game.service';
 
 @Component({
   selector: 'app-root',
@@ -8,10 +8,10 @@ import { GameService, State } from './game.service';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  State = State; // для использования в шаблоне html
+  Stage = Stage; // для использования в шаблоне html
 
-  get gameState(): State {
-    return this.game.getState;
+  get stage(): Stage {
+    return this.game.getStage;
   }
 
   constructor(private game: GameService) {

@@ -1,8 +1,8 @@
-import {State} from '../game.service';
+import {Stage} from '../game.service';
 import {Player} from './player.model';
 
 export class GameRoundState {
-  constructor(public state: State,
+  constructor(public stage: Stage,
               public players: Player[],
               public currentPlayerIndex: number,
               public whoIsRightPlayers: string[],

@@ -2,7 +2,7 @@ import { Player } from './models/player.model';
 import { GameRoundState } from './models/game-round-state.model';
 import { GameState } from './models/game-state.model';
 
-export enum State {
+export enum Stage {
   SetPlayers = 0,
   WhoIsRight = 1,
   WhoHaveBeenChosen = 2
@@ -13,9 +13,9 @@ export class GameService {
   EVERYBODY_GUESSED = -3;
   NOBODY_GUESSED = -2;
 
-  private state: State = State.SetPlayers;
-  get getState(): State {
-    return this.state;
+  private stage: Stage = Stage.SetPlayers;
+  get getStage(): Stage {
+    return this.stage;
   }
 
   private availableClicks: number;
@@ -53,7 +53,7 @@ export class GameService {
       }
 
       this.players = gameRoundState.players.map(p => Player.create(p));
-      this.state = gameRoundState.state;
+      this.stage = gameRoundState.stage;
       this.currentPlayerIndex = gameRoundState.currentPlayerIndex;
       this.whoIsRightPlayers = gameRoundState.whoIsRightPlayers.map(name => this.players.find(p => p.name === name));
       this.currentRound = gameRoundState.currentRound;
@@ -66,13 +66,13 @@ export class GameService {
         ? this.whoIsRightPlayers.map((player: Player) => player.name)
         : [];
 
-      const gameRoundState = new GameRoundState(this.state, this.players, this.currentPlayerIndex, whoIsRightToSave, this.currentRound);
+      const gameRoundState = new GameRoundState(this.stage, this.players, this.currentPlayerIndex, whoIsRightToSave, this.currentRound);
       this.gameState.addRound(gameRoundState);
       this.gameState.store();
   }
 
   addPlayer(player: Player): void {
-    if (this.state !== State.SetPlayers) {
+    if (this.stage !== Stage.SetPlayers) {
       throw new Error('Нельзя добавлять игроков во время игры!');
     }
 
@@ -80,7 +80,7 @@ export class GameService {
   }
 
   deletePlayer(player: Player): void {
-    if (this.state !== State.SetPlayers) {
+    if (this.stage !== Stage.SetPlayers) {
       throw new Error('Нельзя удалять игроков во время игры!');
     }
 
@@ -90,7 +90,7 @@ export class GameService {
 
   start(): void {
     this.currentRound = 1;
-    this.state = State.WhoIsRight;
+    this.stage = Stage.WhoIsRight;
     this.players[this.currentPlayerIndex].isCurrent = true;
     this.storeGameState();
     this.whoIsRightPlayers = this.players.filter(p => p.isSelected);
@@ -102,13 +102,13 @@ export class GameService {
       return;
     }
 
-    if (this.state === State.WhoIsRight) {
+    if (this.stage === Stage.WhoIsRight) {
       player.isSelected ? player.deselect() : player.select();
       this.whoIsRightPlayers = this.players.filter(p => p.isSelected);
       return;
     }
 
-    if (this.state === State.WhoHaveBeenChosen) {
+    if (this.stage === Stage.WhoHaveBeenChosen) {
       let clicksForPlayer = this.availableClicks;
 
       const initialAvailableClicks = this.players.length - 1 - this.whoIsRightPlayers.length;
@@ -133,28 +133,28 @@ export class GameService {
   }
 
   canGoNext(): boolean {
-    if (this.state === State.WhoHaveBeenChosen) {
+    if (this.stage === Stage.WhoHaveBeenChosen) {
       return this.availableClicks === 0;
     }
     return true;
   }
 
   next(): void {
-    if (this.state === State.WhoIsRight) {
-      this.state = State.WhoHaveBeenChosen;
+    if (this.stage === Stage.WhoIsRight) {
+      this.stage = Stage.WhoHaveBeenChosen;
       const everybodyGuessed = this.updateScores();
       if (everybodyGuessed) {
         this.incrementCurrentPlayer();
         this.whoIsRightPlayers = [];
-        this.state = State.WhoIsRight;
+        this.stage = Stage.WhoIsRight;
         this.currentRound++;
       }
       console.log('Кто угадал: ', this.whoIsRightPlayers.map(p => p.name).join(', '));
-    } else if (this.state === State.WhoHaveBeenChosen) {
+    } else if (this.stage === Stage.WhoHaveBeenChosen) {
       this.updateScores2();
       this.incrementCurrentPlayer();
       this.whoIsRightPlayers = [];
-      this.state = State.WhoIsRight;
+      this.stage = Stage.WhoIsRight;
       this.currentRound++;
     }
 
@@ -163,7 +163,7 @@ export class GameService {
       p.isSelected = false;
     });
 
-    if (this.state === State.WhoHaveBeenChosen) {
+    if (this.stage === Stage.WhoHaveBeenChosen) {
       this.updateAvailableClicks();
     }
 
