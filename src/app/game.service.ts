@@ -9,21 +9,21 @@ export enum State {
 }
 
 export class GameService {
-  WIN_SCORE: number = 3;
-  EVERYBODY_GUESSED: number = -3;
-  NOBODY_GUESSED: number = -2;
+  WIN_SCORE = 3;
+  EVERYBODY_GUESSED = -3;
+  NOBODY_GUESSED = -2;
 
   private state: State = State.SetPlayers;
   private availableClicks: number;
 
   readonly players: Player[] = [
-    new Player("Игрок 1"),
-    new Player("Игрок 2"),
-    new Player("Игрок 3"),
-    new Player("Игрок 4")
+    new Player('Игрок 1'),
+    new Player('Игрок 2'),
+    new Player('Игрок 3'),
+    new Player('Игрок 4')
   ];
   whoIsRightPlayers: Player[];
-  currentPlayerIndex: number = 0;
+  currentPlayerIndex = 0;
   readonly stateChanged = new Subject<State>();
 
   constructor() {
@@ -55,15 +55,17 @@ export class GameService {
   }
 
   addPlayer(player: Player): void {
-    if (this.state !== State.SetPlayers)
+    if (this.state !== State.SetPlayers) {
       throw new Error('Нельзя добавлять игроков во время игры!');
+    }
 
     this.players.push(player);
   }
 
   deletePlayer(player: Player): void {
-    if (this.state !== State.SetPlayers)
+    if (this.state !== State.SetPlayers) {
       throw new Error('Нельзя удалять игроков во время игры!');
+    }
 
     const index = this.players.indexOf(player);
     this.players.splice(index, 1);
@@ -78,8 +80,9 @@ export class GameService {
   }
 
   clickPlayer(player: Player): void {
-    if (player.isCurrent)
+    if (player.isCurrent) {
       return;
+    }
 
     if (this.state === State.WhoIsRight) {
       player.isSelected ? player.deselect() : player.select();
@@ -90,16 +93,17 @@ export class GameService {
     if (this.state === State.WhoHaveBeenChosen) {
       let clicksForPlayer = this.availableClicks;
 
-      let initialAvailableClicks = this.players.length - 1 - this.whoIsRightPlayers.length;
+      const initialAvailableClicks = this.players.length - 1 - this.whoIsRightPlayers.length;
       if (this.availableClicks > 0 && !this.whoIsRightPlayers.includes(player) &&
-        player.selectionCount == initialAvailableClicks - 1) {
+        player.selectionCount === initialAvailableClicks - 1) {
         console.log('clicks for player minus one');
         clicksForPlayer--;
       }
 
       console.log('clicks for ' + player.name + ': ' + clicksForPlayer);
-      if (clicksForPlayer > 0)
+      if (clicksForPlayer > 0) {
         player.select();
+      }
       this.updateAvailableClicks();
       return;
     }
@@ -126,7 +130,7 @@ export class GameService {
         this.whoIsRightPlayers = [];
         this.state = State.WhoIsRight;
       }
-      console.log('Кто угадал: ', this.whoIsRightPlayers.map(p => p.name).join(', '))
+      console.log('Кто угадал: ', this.whoIsRightPlayers.map(p => p.name).join(', '));
     } else if (this.state === State.WhoHaveBeenChosen) {
       this.updateScores2();
       this.incrementCurrentPlayer();
@@ -138,44 +142,61 @@ export class GameService {
       p.selectionCount = 0;
       p.isSelected = false;
     });
-    if (this.state === State.WhoHaveBeenChosen)
+    if (this.state === State.WhoHaveBeenChosen) {
       this.updateAvailableClicks();
+    }
 
     this.stateChanged.next(this.state);
   }
 
   restart(): void {
-    if (!confirm("Начинаем заново?")) {
+    if (!confirm('Начинаем заново?')) {
       return;
     }
     localStorage.clear();
-    window.location.href = "/";
+    window.location.href = '/';
   }
 
   // returns true if everybody guessed
   private updateScores(): boolean {
+    this.resetDiff();
+
     const currentPlayer = this.getCurrentPlayer();
+    const initialScore = currentPlayer.score;
+
     if (this.whoIsRightPlayers.length === 0) {
       currentPlayer.score += this.NOBODY_GUESSED;
+      currentPlayer.scoreDiff = currentPlayer.score - initialScore;
       return false;
     }
     if (this.whoIsRightPlayers.length === this.players.length - 1) {
       currentPlayer.score += this.EVERYBODY_GUESSED;
+      currentPlayer.scoreDiff = currentPlayer.score - initialScore;
       return true;
     }
 
     currentPlayer.score += this.WIN_SCORE + this.whoIsRightPlayers.length;
+    currentPlayer.scoreDiff = currentPlayer.score - initialScore;
     this.players.forEach(p => {
-      if (p.isSelected)
+      if (p.isCurrent) {
+        return;
+      }
+
+      const pInitialScore = p.score;
+      if (p.isSelected) {
         p.score += this.WIN_SCORE;
+      }
+      p.scoreDiff = p.score - pInitialScore;
     });
     return false;
   }
 
   private updateScores2(): void {
     this.players.forEach(p => {
-      if (p.isSelected)
+      if (p.isSelected) {
         p.score += p.selectionCount;
+        p.scoreDiff += p.selectionCount;
+      }
     });
   }
 
@@ -203,4 +224,7 @@ export class GameService {
     console.log('availableClicks: ' + this.availableClicks);
   }
 
+  private resetDiff() {
+    this.players.forEach(p => p.scoreDiff = 0);
+  }
 }

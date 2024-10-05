@@ -35,6 +35,17 @@
   font-size: 1.3em;
 }
 
+.score-diff {
+}
+
+.positive {
+  color: forestgreen;
+}
+
+.negative {
+  color: crimson;
+}
+
 .current {
   color: white;
   background-color: crimson;

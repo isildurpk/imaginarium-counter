@@ -3,6 +3,11 @@ export class Player {
   isSelected = false;
   selectionCount = 0;
   score = 0;
+  scoreDiff = 0;
+
+  get scoreDiffStr(): string {
+    return this.scoreDiff >= 0 ? `+${this.scoreDiff}` : `${this.scoreDiff}`;
+  }
 
   constructor(public name: string) {
   }
@@ -13,6 +18,7 @@ export class Player {
     p.isSelected = player.isSelected;
     p.selectionCount = player.selectionCount;
     p.score = player.score;
+    p.scoreDiff = player.scoreDiff;
     return p;
   }
 
@@ -22,8 +28,10 @@ export class Player {
   }
 
   deselect() {
-    if (!this.isSelected)
+    if (!this.isSelected) {
       return;
+    }
+
     this.selectionCount--;
     this.isSelected = this.selectionCount !== 0;
   }

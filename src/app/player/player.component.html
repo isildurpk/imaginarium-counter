@@ -6,11 +6,15 @@
     <div *ngIf="isNeedShowSelectionCount()"
          class="selection-count"
          (click)="onDeselect($event)">
-      {{player.selectionCount}}
+      {{ player.selectionCount }}
     </div>
 
-    <span class="player-name">{{player.name}}</span>
+    <span class="player-name">{{ player.name }}</span>
   </div>
 
-  <span class="score">{{player.score}}</span>
+  <span class="score">{{ player.score }}
+    <span *ngIf="player.scoreDiff != 0"
+          class="score-diff"
+          [className]="player.scoreDiff > 0 ? 'positive' : 'negative'"> ({{ player.scoreDiffStr }})</span>
+  </span>
 </div>
