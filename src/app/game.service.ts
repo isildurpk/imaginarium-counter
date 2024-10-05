@@ -1,6 +1,7 @@
 import {Player} from './models/player.model';
-import {StateDto} from './models/state-dto.model';
+import {GameRoundState} from './models/game-round-state.model';
 import {Subject} from 'rxjs';
+import { GameState } from './models/game-state.model';
 
 export enum State {
   SetPlayers = 0,
@@ -16,40 +17,61 @@ export class GameService {
   private state: State = State.SetPlayers;
   private availableClicks: number;
 
-  readonly players: Player[] = [
+  players: Player[] = [
     new Player('Игрок 1'),
     new Player('Игрок 2'),
     new Player('Игрок 3'),
     new Player('Игрок 4')
   ];
+
   whoIsRightPlayers: Player[];
   currentPlayerIndex = 0;
   currentRound = 0;
   readonly stateChanged = new Subject<State>();
 
+  private gameState: GameState;
+
   constructor() {
     console.log('GameService CONSTRUCTOR');
-    let stateDto: StateDto = JSON.parse(localStorage.getItem('state'));
-    if (stateDto) {
-      this.players = stateDto.players.map(p => Player.create(p));
-      this.state = stateDto.state;
-      this.currentPlayerIndex = stateDto.currentPlayerIndex;
-      this.whoIsRightPlayers = stateDto.whoIsRightPlayers.map(name => this.players.find(p => p.name === name));
-      this.currentRound = stateDto.currentRound;
-      this.stateChanged.next(this.state);
-      this.updateAvailableClicks();
-    }
+    this.restoreGameState();
 
     this.stateChanged.subscribe(() => {
       console.log('StateChanged in GameService');
+      this.storeGameState();
+    });
+  }
 
-      const whoIsRightToSave = this.whoIsRightPlayers
+  private restoreGameState() {
+    this.gameState = GameState.restore();
+
+    if (this.gameState) {
+      const gameRoundState = this.gameState.getLastRound();
+      this.restoreRoundState(gameRoundState);
+    }
+  }
+
+  private restoreRoundState(gameRoundState: GameRoundState) {
+      if (!gameRoundState) {
+        return;
+      }
+
+      this.players = gameRoundState.players.map(p => Player.create(p));
+      this.state = gameRoundState.state;
+      this.currentPlayerIndex = gameRoundState.currentPlayerIndex;
+      this.whoIsRightPlayers = gameRoundState.whoIsRightPlayers.map(name => this.players.find(p => p.name === name));
+      this.currentRound = gameRoundState.currentRound;
+      this.stateChanged.next(this.state);
+      this.updateAvailableClicks();
+  }
+
+  private storeGameState() {
+    const whoIsRightToSave = this.whoIsRightPlayers
         ? this.whoIsRightPlayers.map((player: Player) => player.name)
         : [];
 
-      stateDto = new StateDto(this.state, this.players, this.currentPlayerIndex, whoIsRightToSave, this.currentRound);
-      localStorage.setItem('state', JSON.stringify(stateDto));
-    });
+      const gameRoundState = new GameRoundState(this.state, this.players, this.currentPlayerIndex, whoIsRightToSave, this.currentRound);
+      this.gameState.addRound(gameRoundState);
+      this.gameState.store();
   }
 
   getState(): State {
